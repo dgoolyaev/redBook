@@ -6,5 +6,5 @@ package exercises
  */
 
 object ExerciseTwoDotFivePageTwentySeven {
-  def compose[A,B,C](f: B => C, g: A => B): A => C = g(a) => f(b)
+  def compose[A,B,C](f: B => C, g: A => B): A => C = a => f(g(a))
 }
