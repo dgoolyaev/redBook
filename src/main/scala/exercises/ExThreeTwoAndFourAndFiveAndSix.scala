@@ -1,5 +1,7 @@
 package exercises
 
+import scala.annotation.tailrec
+
 /**
  * Generalize tail to the function drop, which removes the first n elements from a list.
  * Note that this function takes time proportional only to the number of elements being
@@ -13,7 +15,16 @@ package exercises
  * def dropWhile[A](l: List[A], f: A => Boolean): List[A]
  */
 
-object ExThreeTwoAndFourAndFive extends App{
+/**
+ * Not everything works out so nicely. Implement a function, init, that returns a List
+ * consisting of all but the last element of a List. So, given List(1,2,3,4), init will
+ * return List(1,2,3). Why can’t this function be implemented in constant time like
+ * tail?
+ * def init[A](l: List[A]): List[A]
+ *
+ */
+
+object ExThreeTwoAndFourAndFiveAndSix extends App{
   sealed trait List[+A]
   case object Nil extends List[Nothing]
   case class Cons[+A](head: A, tail: List[A]) extends List[A]
@@ -42,10 +53,34 @@ object ExThreeTwoAndFourAndFive extends App{
           else l
       }
     }
+
+    def init[A](l: List[A]): List[A] = {
+
+      @annotation.tailrec
+      def findNil(li: List[A], i: Int): Int = li match {
+        case Nil => i
+        case _ => findNil(li, i+1)
+      }
+
+      val frontier: Int = findNil(l, 0) - 1
+
+      @tailrec
+      def builder(li: List[A], i: Int, n: Int): List[A] = {
+        if i == n then li
+        else li match {
+          case Cons(h: A, _) => builder(Cons(h, Nil), i+1, n)
+        }
+      }
+
+      builder(l, 0, frontier)
+    }
   }
 
   val example: List[Int] = Cons(1, Cons(2, Cons(3, Cons(4, Cons(5, Nil)))))
   println(List.drop(example, 3))
 
   println(List.dropWhile(example, (x: Int) => x < 3))
+
+  println("3.6 warning")
+  println(List.init(example))
 }
