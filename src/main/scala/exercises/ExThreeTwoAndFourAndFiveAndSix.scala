@@ -39,8 +39,9 @@ object ExThreeTwoAndFourAndFiveAndSix extends App{
       @annotation.tailrec
       def loop(i: Int, li: List[A]): List[A] = {
         if n == i then li
-        else loop(i+1, List.tail(li))
+        else loop(i + 1, List.tail(li))
       }
+
       loop(0, l)
     }
 
@@ -54,26 +55,11 @@ object ExThreeTwoAndFourAndFiveAndSix extends App{
       }
     }
 
-    def init[A](l: List[A]): List[A] = {
-
-      @annotation.tailrec
-      def findNil(li: List[A], i: Int): Int = li match {
-        case Nil => i
-        case _ => findNil(li, i+1)
-      }
-
-      val frontier: Int = findNil(l, 0) - 1
-
-      @tailrec
-      def builder(li: List[A], i: Int, n: Int): List[A] = {
-        if i == n then li
-        else li match {
-          case Cons(h: A, _) => builder(Cons(h, Nil), i+1, n)
+        def init[A](l: List[A]): List[A] = l match {
+          case Nil => Nil
+          case Cons(h, t) => if t == Nil then Nil else Cons(h, init(t))
         }
-      }
 
-      builder(l, 0, frontier)
-    }
   }
 
   val example: List[Int] = Cons(1, Cons(2, Cons(3, Cons(4, Cons(5, Nil)))))
@@ -82,5 +68,7 @@ object ExThreeTwoAndFourAndFiveAndSix extends App{
   println(List.dropWhile(example, (x: Int) => x < 3))
 
   println("3.6 warning")
+  //println(List.init(example))
+  println(List.init(Cons(1, Cons(2, Nil))))
   println(List.init(example))
 }
