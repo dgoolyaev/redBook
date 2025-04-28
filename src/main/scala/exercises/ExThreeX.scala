@@ -24,6 +24,12 @@ import scala.annotation.tailrec
  *
  */
 
+/**
+ * Ex 3.9
+ * Compute the length of a list using foldRight.
+ * def length[A](as: List[A]): Int
+ */
+
 object ExThreeX extends App{
   sealed trait List[+A]
   case object Nil extends List[Nothing]
