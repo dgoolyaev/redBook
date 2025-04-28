@@ -24,7 +24,7 @@ import scala.annotation.tailrec
  *
  */
 
-object ExThreeTwoAndFourAndFiveAndSix extends App{
+object ExThreeX extends App{
   sealed trait List[+A]
   case object Nil extends List[Nothing]
   case class Cons[+A](head: A, tail: List[A]) extends List[A]
@@ -60,6 +60,23 @@ object ExThreeTwoAndFourAndFiveAndSix extends App{
           case Cons(h, t) => if t == Nil then Nil else Cons(h, init(t))
         }
 
+        def foldRight[A,B](as: List[A], z: B)(f: (A, B) => B): B =
+          as match {
+            case Nil => z
+            case Cons(head, tail) => f(head, foldRight(tail, z)(f))
+          }
+
+        def sum(ns: List[Int]): Int = foldRight(ns, 0)((x, y) => x + y)
+        def product(ns: List[Double]): Double = foldRight(ns, 1.0) (_*_)
+
+        def length[A](as: List[A]): Int =
+          @tailrec
+          def counter(i: Int, l: List[A]): Int =
+            l match {
+              case Nil => i
+              case Cons(h, t) => if h == Nil then i else counter(i+1, t)
+            }
+          counter(0, as)
   }
 
   val example: List[Int] = Cons(1, Cons(2, Cons(3, Cons(4, Cons(5, Nil)))))
@@ -71,4 +88,10 @@ object ExThreeTwoAndFourAndFiveAndSix extends App{
   //println(List.init(example))
   println(List.init(Cons(1, Cons(2, Nil))))
   println(List.init(example))
+
+  println("3.8 warning")
+  println(List.foldRight(Cons(1, Cons(2, Cons(3, Nil))), Nil:List[Int]) (Cons(_,_)))
+
+  println("3.9 warning")
+  println(List.length(example))
 }
