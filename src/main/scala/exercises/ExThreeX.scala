@@ -94,4 +94,6 @@ object ExThreeX extends App{
 
   println("3.9 warning")
   println(List.length(example))
+  println(List.length(Cons(Nil, Nil)))
+  println(List.length(Cons(1, Nil)))
 }
