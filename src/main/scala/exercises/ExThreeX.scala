@@ -51,6 +51,10 @@ import scala.annotation.tailrec
  * List(3,2,1)). See if you can write it using a fold.
  */
 
+/**
+ * Implement append in terms of either foldLeft or foldRight
+ */
+
 object ExThreeX extends App{
   sealed trait List[+A]
   case object Nil extends List[Nothing]
@@ -126,6 +130,12 @@ object ExThreeX extends App{
         case Cons(h, t) => loop(t, Cons(h, res))
       }
       loop(l, Nil)
+
+      def append[T](l: List[T], el: T): List[T] = l match {
+        case Nil => Cons(el, Nil)
+        case Cons(h, Nil) => Cons(h, Cons(el, Nil))
+        case Cons(h,t) => Cons(h, append(t, el))
+      }
   }
 
   val example: List[Int] = Cons(1, Cons(2, Cons(3, Cons(4, Cons(5, Nil)))))
@@ -153,4 +163,7 @@ object ExThreeX extends App{
 
   println("3.12 warning")
   println(List.revers(example))
+  
+  println("3.14 warning")
+  println(List.append(example, Cons(6, Nil)))
 }
