@@ -30,6 +30,21 @@ import scala.annotation.tailrec
  * def length[A](as: List[A]): Int
  */
 
+/**
+ * Ex 3.10
+ * Our implementation of foldRight is not tail-recursive and will result in a StackOver-
+ * flowError for large lists (we say it’s not stack-safe). Convince yourself that this is the
+ * case, and then write another general list-recursion function, foldLeft, that is
+ * tail-recursive, using the techniques we discussed in the previous chapter. Here is its
+ * signature:
+ * def foldLeft[A,B](as: List[A], z: B)(f: (B, A) => B): B
+ */
+
+/**
+ * Ex 3.11
+ * Write sum, product, and a function to compute the length of a list using foldLeft.
+ */
+
 object ExThreeX extends App{
   sealed trait List[+A]
   case object Nil extends List[Nothing]
@@ -83,6 +98,20 @@ object ExThreeX extends App{
               case Cons(h, t) => if h == Nil then i else counter(i+1, t)
             }
           counter(0, as)
+
+    def foldLeft[A,B](as: List[A], z: B)(f: (B, A) => B): B = {
+      @tailrec
+      def loop(l: List[A], acc: B): B = l match {
+        case Nil => acc
+        case Cons(h, Nil) => f(acc, h)
+        case Cons(h, t) => loop(t, f(acc, h))
+      }
+      loop(as, z)
+    }
+
+    def sumFL(l: List[Int]): Int = foldLeft(l, 0)((x,y) => x+y)
+    def producrFL(l: List[Double]): Double = foldLeft(l, 1.0)(_*_)
+    def lenFL[A](l: List[A]): Int = foldLeft(l, 0)((x, _) => x + 1)
   }
 
   val example: List[Int] = Cons(1, Cons(2, Cons(3, Cons(4, Cons(5, Nil)))))
@@ -102,4 +131,11 @@ object ExThreeX extends App{
   println(List.length(example))
   println(List.length(Cons(Nil, Nil)))
   println(List.length(Cons(1, Nil)))
+
+  println("3.10-11 warning")
+  println(List.producrFL(Cons(5.0, Cons(2.0, Nil))))
+  println(List.sumFL(example))
+  println(List.lenFL(Cons(1, Cons(2, Nil))))
+  println(List.lenFL(example))
+
 }
