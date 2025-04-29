@@ -45,6 +45,12 @@ import scala.annotation.tailrec
  * Write sum, product, and a function to compute the length of a list using foldLeft.
  */
 
+/**
+ * Ex 3.12
+ * Write a function that returns the reverse of a list (given List(1,2,3) it returns
+ * List(3,2,1)). See if you can write it using a fold.
+ */
+
 object ExThreeX extends App{
   sealed trait List[+A]
   case object Nil extends List[Nothing]
@@ -112,6 +118,14 @@ object ExThreeX extends App{
     def sumFL(l: List[Int]): Int = foldLeft(l, 0)((x,y) => x+y)
     def producrFL(l: List[Double]): Double = foldLeft(l, 1.0)(_*_)
     def lenFL[A](l: List[A]): Int = foldLeft(l, 0)((x, _) => x + 1)
+
+    def revers[A](l: List[A]): List[A] =
+      @tailrec
+      def loop(orig: List[A], res: List[A]): List[A] = orig match {
+        case Nil => res
+        case Cons(h, t) => loop(t, Cons(h, res))
+      }
+      loop(l, Nil)
   }
 
   val example: List[Int] = Cons(1, Cons(2, Cons(3, Cons(4, Cons(5, Nil)))))
@@ -120,7 +134,6 @@ object ExThreeX extends App{
   println(List.dropWhile(example, (x: Int) => x < 3))
 
   println("3.6 warning")
-  //println(List.init(example))
   println(List.init(Cons(1, Cons(2, Nil))))
   println(List.init(example))
 
@@ -138,4 +151,6 @@ object ExThreeX extends App{
   println(List.lenFL(Cons(1, Cons(2, Nil))))
   println(List.lenFL(example))
 
+  println("3.12 warning")
+  println(List.revers(example))
 }
