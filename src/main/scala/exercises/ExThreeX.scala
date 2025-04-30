@@ -55,9 +55,11 @@ import scala.annotation.tailrec
  * Implement append in terms of either foldLeft or foldRight
  */
 
-object ExThreeX extends App{
+object ExThreeX extends App {
   sealed trait List[+A]
+
   case object Nil extends List[Nothing]
+
   case class Cons[+A](head: A, tail: List[A]) extends List[A]
 
   object List {
@@ -86,56 +88,63 @@ object ExThreeX extends App{
       }
     }
 
-        def init[A](l: List[A]): List[A] = l match {
-          case Nil => Nil
-          case Cons(h, t) => if t == Nil then Nil else Cons(h, init(t))
+    def init[A](l: List[A]): List[A] = l match {
+      case Nil => Nil
+      case Cons(h, t) => if t == Nil then Nil else Cons(h, init(t))
+    }
+
+    def foldRight[A, B](as: List[A], z: B)(f: (A, B) => B): B =
+      as match {
+        case Nil => z
+        case Cons(head, tail) => f(head, foldRight(tail, z)(f))
+      }
+
+    def sum(ns: List[Int]): Int = foldRight(ns, 0)((x, y) => x + y)
+
+    def product(ns: List[Double]): Double = foldRight(ns, 1.0)(_ * _)
+
+    def length[A](as: List[A]): Int =
+      @tailrec
+      def counter(i: Int, l: List[A]): Int =
+        l match {
+          case Nil => i
+          case Cons(h, t) => if h == Nil then i else counter(i + 1, t)
         }
 
-        def foldRight[A,B](as: List[A], z: B)(f: (A, B) => B): B =
-          as match {
-            case Nil => z
-            case Cons(head, tail) => f(head, foldRight(tail, z)(f))
-          }
+      counter(0, as)
 
-        def sum(ns: List[Int]): Int = foldRight(ns, 0)((x, y) => x + y)
-        def product(ns: List[Double]): Double = foldRight(ns, 1.0) (_*_)
-
-        def length[A](as: List[A]): Int =
-          @tailrec
-          def counter(i: Int, l: List[A]): Int =
-            l match {
-              case Nil => i
-              case Cons(h, t) => if h == Nil then i else counter(i+1, t)
-            }
-          counter(0, as)
-
-    def foldLeft[A,B](as: List[A], z: B)(f: (B, A) => B): B = {
+    def foldLeft[A, B](as: List[A], z: B)(f: (B, A) => B): B = {
       @tailrec
       def loop(l: List[A], acc: B): B = l match {
         case Nil => acc
         case Cons(h, Nil) => f(acc, h)
         case Cons(h, t) => loop(t, f(acc, h))
       }
+
       loop(as, z)
     }
 
-    def sumFL(l: List[Int]): Int = foldLeft(l, 0)((x,y) => x+y)
-    def producrFL(l: List[Double]): Double = foldLeft(l, 1.0)(_*_)
+    def sumFL(l: List[Int]): Int = foldLeft(l, 0)((x, y) => x + y)
+
+    def producrFL(l: List[Double]): Double = foldLeft(l, 1.0)(_ * _)
+
     def lenFL[A](l: List[A]): Int = foldLeft(l, 0)((x, _) => x + 1)
 
-    def revers[A](l: List[A]): List[A] =
+    def revers[A](l: List[A]): List[A] = {
       @tailrec
       def loop(orig: List[A], res: List[A]): List[A] = orig match {
         case Nil => res
         case Cons(h, t) => loop(t, Cons(h, res))
       }
-      loop(l, Nil)
 
-      def append[T](l: List[T], el: T): List[T] = l match {
-        case Nil => Cons(el, Nil)
-        case Cons(h, Nil) => Cons(h, Cons(el, Nil))
-        case Cons(h,t) => Cons(h, append(t, el))
-      }
+      loop(l, Nil)
+    }
+
+    def append[T](l: List[T], el: T): List[T] = l match
+      case Nil => Cons(el, Nil)
+      case Cons(h, Nil) => Cons(h, Cons(el, Nil))
+      case Cons(h, t) => Cons(h, append(t, el))
+
   }
 
   val example: List[Int] = Cons(1, Cons(2, Cons(3, Cons(4, Cons(5, Nil)))))
@@ -148,7 +157,7 @@ object ExThreeX extends App{
   println(List.init(example))
 
   println("3.8 warning")
-  println(List.foldRight(Cons(1, Cons(2, Cons(3, Nil))), Nil:List[Int]) (Cons(_,_)))
+  println(List.foldRight(Cons(1, Cons(2, Cons(3, Nil))), Nil: List[Int])(Cons(_, _)))
 
   println("3.9 warning")
   println(List.length(example))
@@ -163,7 +172,7 @@ object ExThreeX extends App{
 
   println("3.12 warning")
   println(List.revers(example))
-  
+
   println("3.14 warning")
-  println(List.append(example, Cons(6, Nil)))
+  println(List.append(example, 6))
 }
